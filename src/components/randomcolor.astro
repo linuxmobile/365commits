@@ -1,0 +1,68 @@
+---
+
+---
+<section class="">
+    <h1 class="font-black text-9xl">TESTEANDO ALGO</h1>
+    <p class="font-black text-6xl">PROBANDO SI FUNCIONA</p>
+</section>
+<script type="module">
+    // importar randomColor 
+    const randomColor = (await import('https://cdn.skypack.dev/randomcolor')).default;
+
+    // Verifica si hay paletas de colores almacenadas en el almacenamiento local del navegador
+    const palettes = JSON.parse(localStorage.getItem('palettes'));
+    if (palettes) {
+    // Si hay paletas de colores almacenadas, carga la paleta de colores para el día actual y la utiliza para cambiar el fondo de la página
+    const currentDate = new Date();
+    const startOfYear = new Date(currentDate.getFullYear(), 0, 0);
+    const diff = currentDate - startOfYear;
+    const oneDay = 1000 * 60 * 60 * 24;
+    const dayOfYear = Math.floor(diff / oneDay);
+    const currentPalette = palettes[dayOfYear];
+    document.body.style.backgroundColor = currentPalette[0];
+    document.querySelector('h1').style.color = currentPalette[1];
+    document.querySelector('p').style.color = currentPalette[2];
+    } else {
+    // Si no hay paletas de colores almacenadas, genera 365 paletas de colores aleatorias y las almacena en el almacenamiento local del navegador
+    let palettesArray = [];
+    for (let i = 0; i < 365; i++) {
+        // Calcula la estación actual y la siguiente en base al día del año
+        const currentMonth = new Date().getMonth() + 1; // Enero es 0, febrero es 1, etc.
+        let currentSeason, nextSeason;
+        if (currentMonth >= 3 && currentMonth <= 5) {
+        currentSeason = 'spring';
+        nextSeason = 'summer';
+        } else if (currentMonth >= 6 && currentMonth <= 8) {
+        currentSeason = 'summer';
+        nextSeason = 'autumn';
+        } else if (currentMonth >= 9 && currentMonth <= 11) {
+        currentSeason = 'autumn';
+        nextSeason = 'winter';
+        } else {
+        currentSeason = 'winter';
+        nextSeason = 'spring';
+        }
+
+        // Genera una paleta de colores aleatoria para la estación actual y la siguiente
+        palettesArray.push(randomColor({
+        count: 5,
+        luminosity: 'bright',
+        hue: [currentSeason, nextSeason],
+        }));
+    }
+
+  // Almacena las paletas de colores en el almacenamiento local del navegador
+  localStorage.setItem('palettes', JSON.stringify(palettesArray));
+
+  // Carga la paleta de colores para el día actual desde el almacenamiento local del navegador y la utiliza para cambiar el fondo de la página
+    const currentDate = new Date();
+    const startOfYear = new Date(currentDate.getFullYear(), 0, 0);
+    const diff = currentDate - startOfYear;
+    const oneDay = 1000 * 60 * 60 * 24;
+    const dayOfYear = Math.floor(diff / oneDay);
+    const currentPalette = palettesArray[dayOfYear];
+    document.body.style.backgroundColor = currentPalette[0];
+    document.querySelector('h1').style.color = currentPalette[1];
+    document.querySelector('p').style.color = currentPalette[2];
+    }
+</script>
